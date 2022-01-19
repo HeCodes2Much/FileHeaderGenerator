@@ -43,7 +43,7 @@ Also note that I'm mostly making this extension for myself - that means that I m
 
 ## Release Notes
 
-See the release notes for each version below. For a full overview, check CHANGELOG.md.
+See the release notes for each version below. For a full overview, check [CHANGELOG.md](CHANGELOG.md).
 
 ### [1.0.2] - 19-01-2022
 
