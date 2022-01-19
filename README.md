@@ -8,7 +8,7 @@ The File Header Generator extension aims to quickly generate readable headers fo
 The File Header Generator generates headers in one, pre-determined lay-out. This layout displays a more readable type of file name, the creator of the file, when the file was created and when the file was edited most recently. Additionally, it also shows a description (see the picture below for an example).
 
 ![Example Header](images/header_example.png)  
-_Image using the [Panda Syntax](https://marketplace.visualstudio.com/items?itemName=tinkertrain.theme-panda) theme_
+_Image using the [Dracula Syntax](https://marketplace.visualstudio.com/items?itemName=dracula-theme.theme-dracula) theme_
 
 The creation of a new header is really easy. Simply run the command: "Generate Header" from the command palette, type a discription for your file and hit enter. This description can, of course, also be added later on by editing the header manually. Note that when adding the header via the input box, it is automatically hard-wrapped to a total of 79 characters per line.
 
@@ -45,6 +45,14 @@ Also note that I'm mostly making this extension for myself - that means that I m
 
 See the release notes for each version below. For a full overview, check CHANGELOG.md.
 
-### 1.0.0
+### [1.0.2] - 19-01-2022
 
-Initial release of the extension.
+- Added Github
+
+### [1.0.1] - 19-01-2022
+
+- Added She-Bang
+
+### [1.0.0] - 19-01-2022
+
+- Initial release of the extension.

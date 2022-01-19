@@ -2,8 +2,9 @@
 	"name": "fileheadergenerator",
 	"displayName": "File Header Generator",
 	"description": "Automatically creates (and maintains) file headers for multiple languages.",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"publisher": "TheRepoClub",
+	"icon": "images/logo.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/The-Repo-Club/FileHeaderGenerator"
