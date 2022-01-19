@@ -1,12 +1,12 @@
 {
-	"name": "file-header-generator",
+	"name": "fileheadergenerator",
 	"displayName": "File Header Generator",
 	"description": "Automatically creates (and maintains) file headers for multiple languages.",
-	"version": "1.1.0",
-	"publisher": "Lut99",
+	"version": "1.0.0",
+	"publisher": "TheRepoClub",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/Lut99/FileHeaderGenerator.git"
+		"url": "https://github.com/minimal-mistakes/FileHeaderGenerator"
 	},
 	"engines": {
 		"vscode": "^1.41.0"
