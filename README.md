@@ -36,7 +36,7 @@ This extension contributes the following settings:
 
 ## Issues
 
-If you encounter any issues, have suggestions or would like something to change, don't hesitate to leave an issue at our [github](https://github.com/minimal-mistakes/FileHeaderGenerator/issues)! Please try to use the appropriate tags so I can process them more efficiently.
+If you encounter any issues, have suggestions or would like something to change, don't hesitate to leave an issue at our [github](https://github.com/The-Repo-Club/FileHeaderGenerator/issues)! Please try to use the appropriate tags so I can process them more efficiently.
 
 Also note that I'm mostly making this extension for myself - that means that I might not respond to issues immediately or incorporate them, even if they're super good ideas.
 
