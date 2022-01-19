@@ -2,7 +2,7 @@
 	"name": "fileheadergenerator",
 	"displayName": "File Header Generator",
 	"description": "Automatically creates (and maintains) file headers for multiple languages.",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"publisher": "TheRepoClub",
 	"repository": {
 		"type": "git",
@@ -21,7 +21,7 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "file-header-generator.generateHeader",
+				"command": "fileheadergenerator.generateHeader",
 				"title": "Generate Header"
 			}
 		],
@@ -29,22 +29,27 @@
 			{
 				"title": "File Header Generator",
 				"properties": {
-					"file-header-generator.enabled": {
+					"fileheadergenerator.enabled": {
 						"type": "boolean",
 						"default": true,
 						"description": "Enables or disables this extension."
 					},
-					"file-header-generator.username": {
+					"fileheadergenerator.username": {
 						"type": "string",
 						"default": "Anonymous",
 						"description": "Set your own name to sign the headers generated with this extension."
 					},
-					"file-header-generator.searchLines": {
+					"fileheadergenerator.github": {
+						"type": "string",
+						"default": "Anonymous",
+						"description": "Set your own github to sign the headers generated with this extension."
+					},
+					"fileheadergenerator.searchLines": {
 						"type": "number",
 						"default": 15,
 						"description": "Number of lines to search for the 'Auto updated?' and 'Last edited:' fields. The larger the number, the more you can write before the fields can appear; however, it also increases search cost for files that are not auto updated."
 					},
-					"file-header-generator.dateFormat": {
+					"fileheadergenerator.dateFormat": {
 						"type": "string",
 						"default": "<locale>",
 						"description": "The format of dates written by the FileHeaderGenerator. For an overview of the tokens available, refer to the extension's README."

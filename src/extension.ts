@@ -1,16 +1,22 @@
-/* EXTENSION.ts
- *   by Lut99
- *
- * Created:
- *   15 Jan 2020, 16:29:13
- * Last edited:
- *   21 Dec 2021, 01:17:27
+/*!/usr/bin/env typescript
+ * -*-coding:utf-8 -*-
  * Auto updated?
  *   Yes
+ *File :
+ *   extension
+ *Author :
+ *   The-Repo-Club [wayne6324:gmail.com]
+ *Github :
+ *   https://github.com/The-Repo-Club/
+ *
+ * Created:
+ *   Wed 19 January 2022, 03:12:09 PM [GMT]
+ * Last edited:
+ *   Wed 19 January 2022, 03:12:30 PM [GMT]
  *
  * Description:
- *   TypeScript script for the File Header Generator extension. This is
- *   where the magic happens, as they say.
+ *   TypeScript script for the File Header Generator  *   extension. This
+ *   is  *   where the magic happens, as they say.
 **/
 
 // The module 'vscode' contains the VS Code extensibility API
@@ -34,15 +40,11 @@ class CommentSet {
 	}
 }
 
-
-
-
-
 /***** CONFIGURATION SETTINGS *****/
 /* Function that returns the enabled setting value from VSCode's settings. */
 function get_enabled(): boolean {
 	let config = vscode.workspace.getConfiguration();
-	let data = config.get<boolean>("file-header-generator.enabled");
+	let data = config.get<boolean>("fileheadergenerator.enabled");
 	if (data === undefined) {
 		return true;
 	}
@@ -52,7 +54,17 @@ function get_enabled(): boolean {
 /* Function that returns the editor's name from VSCode's settings. */
 function get_editor(): string {
 	let config = vscode.workspace.getConfiguration();
-	let data = config.get<string>("file-header-generator.username");
+	let data = config.get<string>("fileheadergenerator.username");
+	if (data === undefined) {
+		return "anonymous";
+	}
+	return data;
+}
+
+/* Function that returns the editor's github from VSCode's settings. */
+function get_github(): string {
+	let config = vscode.workspace.getConfiguration();
+	let data = config.get<string>("fileheadergenerator.github");
 	if (data === undefined) {
 		return "anonymous";
 	}
@@ -62,7 +74,7 @@ function get_editor(): string {
 /* Function that returns the number of lines to search from VSCode's settings. */
 function get_n_lines(): number {
 	let config = vscode.workspace.getConfiguration();
-	let data = config.get<number>("file-header-generator.searchLines");
+	let data = config.get<number>("fileheadergenerator.searchLines");
 	if (data === undefined) {
 		return 15;
 	}
@@ -72,21 +84,18 @@ function get_n_lines(): number {
 /* Function that returns the date format string from VSCode's settings. */
 function get_date_format(): string {
 	let config = vscode.workspace.getConfiguration();
-	let data = config.get<string>("file-header-generator.dateFormat");
+	let data = config.get<string>("fileheadergenerator.dateFormat");
 	if (data === undefined) {
 		return "<locale>";
 	}
 	return data;
 }
 
-
-
-
-
 /***** HELPER FUNCTIONS *****/
 /* Given the document, returns its name in a more name-y format.
- * This format is basically the name of the file capitalized without extensions, and with spaces on underscores or capitalization changes. */
-function get_header_title(doc: vscode.TextDocument): string {
+ * This format is basically the name of the file capitalized without extensions, and with spaces on underscores or capitalization changes.
+*/
+function get_filename(doc: vscode.TextDocument): string {
 	let path_raw = doc.uri.path;
 
 	let slash_pos = path_raw.lastIndexOf("/");
@@ -98,41 +107,16 @@ function get_header_title(doc: vscode.TextDocument): string {
 		name = path_raw.substring(slash_pos + 1);
 	}
 
-	// Change the file name (excl. extension) to capital letters. However, if the name has camelcase letters, split the name by space. Replaces '_' or '-' also with a space.
 	let extension_pos = name.lastIndexOf(".");
 	if (extension_pos < 0) {
 		// No extension
 		extension_pos = name.length;
 	}
-	
-	let last_type = undefined;
+
 	let result = "";
 	for (var i = 0; i < extension_pos; i++) {
 		let c = name.charAt(i);
-		let type = "lower";
-		if (!isNaN(Number(c))) {
-			type = "num";
-		} else if (c === c.toUpperCase()) {
-			type = "upper";
-		}
-		
-		if (c === "_" || c === "-" || c === " ") {
-			result += " ";
-			c = "";
-			type = "space";
-		} else if (last_type !== undefined && ((type === "num" && last_type !== "num" && last_type !== "space") || (type === "upper" && last_type === "lower"))) {
-			// First number, add a space
-			result += " ";
-		}
-
-		result += c.toUpperCase();
-		
-		// Update last_c and type
-		last_type = type;
-	}
-	// Add the extension as-is
-	if (extension_pos !== name.length) {
-		result += name.substring(extension_pos);
+		result += c;
 	}
 
 	return result;
@@ -155,6 +139,15 @@ function get_comment_set(doc: vscode.TextDocument): CommentSet {
 	}
 }
 
+function get_file_bang(doc: vscode.TextDocument): string {
+	let lang = doc.languageId;
+	// Use that for the comment character
+	if (lang === "shellscript") {
+		lang = "bash"
+	}
+	return lang;
+}
+
 /* Converts the given datetime to the given format. */
 function date_to_format(date: DateTime, formatString: string): string {
 	if (formatString === "<locale>") {
@@ -162,7 +155,7 @@ function date_to_format(date: DateTime, formatString: string): string {
 	} else if (formatString === "<iso>") {
 		return date.toISO();
 	} else {
-		return date.toFormat(formatString)
+		return date.toFormat(formatString);
 	}
 }
 
@@ -216,7 +209,7 @@ function get_line(text: string): string | undefined {
 		}
 		to_return += text[i];
 	}
-	
+
 	// No newline was found, return the remaining text unless no text was found at all
 	if (to_return === "") {
 		return undefined;
@@ -236,7 +229,7 @@ function strip_whitelines(text: string): string {
 	for (; start_i < text.length; start_i++) {
 		if (!is_whiteline(text[start_i])) { break; }
 	}
-	
+
 	// Skip the end spaces
 	let end_i = text.length - 1;
 	for (; end_i >= 0; end_i--) {
@@ -326,10 +319,6 @@ function goto_position(doc: vscode.TextDocument, end_pos: vscode.Position): void
 	});
 }
 
-
-
-
-
 /***** COMMAND FUNCTIONS *****/
 /* Prepares generating a header by quering the user for a description. */
 async function prepare_generation() {
@@ -365,23 +354,30 @@ function generate_header(doc: vscode.TextDocument, description: string): void {
 
 	// Fetch the correct comment characters
 	let set = get_comment_set(doc);
+	let bang = get_file_bang(doc);
 
 	// Fetch the filename (with extension)
-	let title = get_header_title(doc);
+	let file = get_filename(doc);
 
 	// Wrap the description if necessary
 	let description_wrapped = wrap_description(description, set.middle + "   ");
-	
+
 	// Create the full comment text
-	let text = set.start + " " + title + "\n";
-	text += set.middle + "   by " + get_editor() + "\n";
+	let text = set.start + "!/usr/bin/env " + bang + "\n";
+	text += set.middle + " -*-coding:utf-8 -*- \n";
+	text += set.middle + " Auto updated?\n";
+	text += set.middle + "   Yes\n";
+	text += set.middle + "File :\n";
+	text += set.middle + "   " + file + "\n";
+	text += set.middle + "Author :\n";
+	text += set.middle + "   " + get_editor() + "\n";
+	text += set.middle + "Github :\n";
+	text += set.middle + "   " + get_github() + "\n";
 	text += set.middle + "\n";
 	text += set.middle + " Created:\n";
 	text += set.middle + "   " + get_now(date_format) + "\n";
 	text += set.middle + " Last edited:\n";
 	text += set.middle + "   " + get_now(date_format) + "\n";
-	text += set.middle + " Auto updated?\n";
-	text += set.middle + "   Yes\n";
 	text += set.middle + "\n";
 	text += set.middle + " Description:\n";
 	text += description_wrapped;
@@ -392,10 +388,6 @@ function generate_header(doc: vscode.TextDocument, description: string): void {
 	edit.insert(path, new vscode.Position(0, 0), text);
 	vscode.workspace.applyEdit(edit);
 }
-
-
-
-
 
 /***** EVENTS *****/
 /* Event listener for when a user saves a file, i.e. the header should be updated. */
@@ -419,13 +411,13 @@ function update_header(doc: vscode.TextDocument): void {
 	// Check what we have
 	if (!auto_updated) {
 		// No auto update enabled
-		console.log("file-header-generator: no auto update enabled for file: \"" + doc.uri.path + "\"");
+		console.log("fileheadergenerator: no auto update enabled for file: \"" + doc.uri.path + "\"");
 		return;
 	}
 
 	// If auto updateing but no last_edited found
 	if (last_edited_line === -1 || last_edited_start === -1 || last_edited_end === -1) {
-		console.log("file-header-generator: we want to auto update, but no 'last updated' header found: this should not happen!")
+		console.log("fileheadergenerator: we want to auto update, but no 'last updated' header found: this should not happen!")
 		vscode.window.showErrorMessage("Internal error occurred while updating file (see log)");
 		return;
 	}
@@ -442,7 +434,7 @@ function update_header(doc: vscode.TextDocument): void {
 		});
 	});
 
-	console.log("file-header-generator: update success for file: \"" + doc.uri.path + "\"");
+	console.log("fileheadergenerator: update success for file: \"" + doc.uri.path + "\"");
 }
 
 /* Handler for the extension activation; basically the first time it is run/loaded. */
@@ -450,14 +442,14 @@ export function activate(context: vscode.ExtensionContext) {
 	// Only add things if the extension is enabled
 	if (get_enabled()) {
 		// Register the commands and handlers
-		let generate_header = vscode.commands.registerCommand('file-header-generator.generateHeader', prepare_generation);
+		let generate_header = vscode.commands.registerCommand('fileheadergenerator.generateHeader', prepare_generation);
 		let on_did_save_handler = vscode.workspace.onDidSaveTextDocument(update_header);
 
 		// Push them to the context
 		context.subscriptions.push(generate_header, on_did_save_handler);
 	} else {
 		// Register the commands and handlers
-		let generate_header = vscode.commands.registerCommand('file-header-generator.generateHeader', () => {
+		let generate_header = vscode.commands.registerCommand('fileheadergenerator.generateHeader', () => {
 			vscode.window.showInformationMessage("Extension 'File Header Generator' is not enabled. Enable it in settings.");
 		});
 
@@ -467,4 +459,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 /* Handler for the extension deactivation. */
-export function deactivate() {}
+export function deactivate() { }
