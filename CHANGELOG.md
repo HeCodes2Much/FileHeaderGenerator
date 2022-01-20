@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [1.0.3] - 20-01-2022
+
+- Fixed She-Bang to work right
+- Added more language compatibilities
+- Added Dependencies userneth Description
+
 ## [1.0.2] - 19-01-2022
 
 - Added Github as a type

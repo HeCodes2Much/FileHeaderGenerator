@@ -12,19 +12,18 @@
  * Created:
  *   Wed 19 January 2022, 03:12:09 PM [GMT]
  * Last edited:
- *   Wed 19 January 2022, 03:12:30 PM [GMT]
+ *   Thu 20 January 2022, 08:36:05 PM [GMT]
  *
  * Description:
  *   TypeScript script for the File Header Generator  *   extension. This
  *   is  *   where the magic happens, as they say.
-**/
+ **/
 
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 // Also import moment for date formatting
 import { DateTime } from "luxon";
-
 
 /***** HELPER CLASSES *****/
 /* The CommentSet class, which is used to determine which comment characters are applicable for the target language. */
@@ -94,9 +93,10 @@ function get_date_format(): string {
 /***** HELPER FUNCTIONS *****/
 /* Given the document, returns its name in a more name-y format.
  * This format is basically the name of the file capitalized without extensions, and with spaces on underscores or capitalization changes.
-*/
+ */
 function get_filename(doc: vscode.TextDocument): string {
 	let path_raw = doc.uri.path;
+	let result = "";
 
 	let slash_pos = path_raw.lastIndexOf("/");
 	let name;
@@ -107,17 +107,7 @@ function get_filename(doc: vscode.TextDocument): string {
 		name = path_raw.substring(slash_pos + 1);
 	}
 
-	let extension_pos = name.lastIndexOf(".");
-	if (extension_pos < 0) {
-		// No extension
-		extension_pos = name.length;
-	}
-
-	let result = "";
-	for (var i = 0; i < extension_pos; i++) {
-		let c = name.charAt(i);
-		result += c;
-	}
+	result += name;
 
 	return result;
 }
@@ -126,26 +116,76 @@ function get_filename(doc: vscode.TextDocument): string {
 function get_comment_set(doc: vscode.TextDocument): CommentSet {
 	let id = doc.languageId;
 	// Use that for the comment character
-	if (id === "c" || id === "cpp" || id === "csharp" || id === "java" || id === "typescript" || id === "javascript" || id === "cuda" || id === "css" || id === "php" || id === "glsl" || id === "rust") {
+	if (
+		id === "c" ||
+		id === "cpp" ||
+		id === "csharp" ||
+		id === "cuda-cpp" ||
+		id === "java" ||
+		id === "dart" ||
+		id === "typescript" ||
+		id === "javascript" ||
+		id === "cuda" ||
+		id === "css" ||
+		id === "php" ||
+		id === "glsl" ||
+		id === "rust"
+	) {
 		return new CommentSet("/*", " *", "**/");
-	} else if (id === "python" || id === "shellscript" || id === "makefile" || id === "cmake") {
+	} else if (
+		id === "python" ||
+		id === "shellscript" ||
+		id === "makefile" ||
+		id === "perl" ||
+		id === "cmake" ||
+		id === "diff" ||
+		id === "fish" ||
+		id === "git-commit" ||
+		id === "coffeescript" ||
+		id === "dockercompose"
+	) {
 		return new CommentSet("#", "#", "#");
-	} else if (id === "lua") {
-		return new CommentSet("--[[", "    ", "--]]");
+	} else if (
+		id === "lua" ||
+		id === "cabal" ||
+		id === "haskell" ||
+		id === "C2Hs"
+	) {
+		return new CommentSet("--[[", "--", "--]]");
 	} else if (id === "html") {
-		return new CommentSet("<!--", "    ", "-->");
+		return new CommentSet("<!--", "--", "-->");
+	} else if (id === "clojure" || id === "fsharp") {
+		return new CommentSet(";;", ";;", ";;");
 	} else {
 		return new CommentSet("", "", "");
 	}
 }
 
 function get_file_bang(doc: vscode.TextDocument): string {
-	let lang = doc.languageId;
+	let id = doc.languageId;
+
+	let lang;
 	// Use that for the comment character
-	if (lang === "shellscript") {
-		lang = "bash"
+	if (
+		id === "python" ||
+		id === "shellscript" ||
+		id === "perl" ||
+		id === "fish" ||
+		id === "lua" ||
+		id === "coffeescript"
+	) {
+		if (id === "shellscript") {
+			lang = "bash";
+			return "#!/usr/bin/env " + lang;
+		} else if (id === "coffeescript") {
+			lang = "coffee";
+			return "#!/usr/bin/env " + lang;
+		} else {
+			return "#!/usr/bin/env " + id;
+		}
+	} else {
+		return "";
 	}
-	return lang;
 }
 
 /* Converts the given datetime to the given format. */
@@ -166,7 +206,11 @@ function get_now(formatString: string): string {
 }
 
 /* Given a lengthy description, wraps it in lines of at most line_length character long. The line_start is the bit of text that should be printed in front of each line (usually the middle comment tag). */
-function wrap_description(description: string, line_start: string, line_length: number = 79) {
+function wrap_description(
+	description: string,
+	line_start: string,
+	line_length: number = 79
+) {
 	let description_words = description.split(" ");
 	let wrapped_description = "";
 	let line = line_start;
@@ -176,7 +220,10 @@ function wrap_description(description: string, line_start: string, line_length: 
 		// Check if we can add this word to the line without clipping. If we
 		//   can't, begin a newline. Only do this if there is something in the
 		//   line buffer.
-		if (line.length > line_start.length && line.length + word.length > functional_length) {
+		if (
+			line.length > line_start.length &&
+			line.length + word.length > functional_length
+		) {
 			// Do a newline first
 			wrapped_description += line + "\n";
 			line = line_start;
@@ -184,7 +231,10 @@ function wrap_description(description: string, line_start: string, line_length: 
 		// Check if the word itself will be able to fit. If not, then split the
 		//   word in two and add it to the list as first words
 		if (word.length > functional_length) {
-			description_words = [word.substring(0, functional_length), word.substring(functional_length)].concat(description_words);
+			description_words = [
+				word.substring(0, functional_length),
+				word.substring(functional_length),
+			].concat(description_words);
 		} else {
 			// If everything got through correctly, add the current word to the line
 			if (line.length > line_start.length) {
@@ -227,13 +277,17 @@ function strip_whitelines(text: string): string {
 	// First, skip all start spaces
 	let start_i = 0;
 	for (; start_i < text.length; start_i++) {
-		if (!is_whiteline(text[start_i])) { break; }
+		if (!is_whiteline(text[start_i])) {
+			break;
+		}
 	}
 
 	// Skip the end spaces
 	let end_i = text.length - 1;
 	for (; end_i >= 0; end_i--) {
-		if (!is_whiteline(text[end_i])) { break; }
+		if (!is_whiteline(text[end_i])) {
+			break;
+		}
 	}
 
 	// If the end_i is before the start_i, return an empty string (only happens with only spaces)
@@ -246,7 +300,11 @@ function strip_whitelines(text: string): string {
 }
 // dd MMM yyyy, HH:mm:ss
 /* Returns whether or not the given file is auto-updated or not. If so, then also returns the position and length of the values of the created date and the last-edited date. */
-function read_file_header(doc: vscode.TextDocument, set: CommentSet, max_lines_to_search: number): [boolean, number, number, number, number, number, number] {
+function read_file_header(
+	doc: vscode.TextDocument,
+	set: CommentSet,
+	max_lines_to_search: number
+): [boolean, number, number, number, number, number, number] {
 	// Simply search the first N lines for the line: set.middle + " Auto updated?"
 	// But while at it, also save position of lines: set.middle + " Created:" and set.middle + " Last edited:"
 	let doc_text = doc.getText();
@@ -302,21 +360,22 @@ function read_file_header(doc: vscode.TextDocument, set: CommentSet, max_lines_t
 
 	// If the auto-update is still pending, then tell the user they're missing a bit
 	if (auto_updated === "pending") {
-		vscode.window.showErrorMessage("Unknown auto-update option in header; should be 'yes' or 'no'");
+		vscode.window.showErrorMessage(
+			"Unknown auto-update option in header; should be 'yes' or 'no'"
+		);
 		return [false, -1, -1, -1, -1, -1, -1];
 	}
 
 	// Return what we have
-	return [auto_updated === "yes", created_line, created_start, created_end, last_edited_line, last_edited_start, last_edited_end];
-}
-
-/* Opens the given document at the given position. */
-function goto_position(doc: vscode.TextDocument, end_pos: vscode.Position): void {
-	let editor_promise = vscode.window.showTextDocument(doc, undefined, false);
-	editor_promise.then((editor) => {
-		// Show the range
-		editor.revealRange(new vscode.Range(new vscode.Position(0, 0), end_pos));
-	});
+	return [
+		auto_updated === "yes",
+		created_line,
+		created_start,
+		created_end,
+		last_edited_line,
+		last_edited_start,
+		last_edited_end,
+	];
 }
 
 /***** COMMAND FUNCTIONS *****/
@@ -332,7 +391,7 @@ async function prepare_generation() {
 	// Query the user about a description
 	let description = await vscode.window.showInputBox({
 		placeHolder: "e.g., This file contains the Dog class that does...",
-		prompt: "File description"
+		prompt: "File description",
 	});
 	if (description === undefined) {
 		return;
@@ -340,12 +399,29 @@ async function prepare_generation() {
 		description = "<Todo>";
 	}
 
+	let dependencies = await vscode.window.showInputBox({
+		placeHolder: "e.g., python, bash, rust.",
+		prompt: "File dependencies",
+	});
+	if (dependencies === undefined) {
+		return;
+	} else if (dependencies === "") {
+		dependencies = "<None>";
+	}
+
 	// Do the actual generation
-	generate_header(doc, description);
+	generate_header(doc, description, dependencies);
 }
 
 /* Given a document and its description, generates a new header at the start of this document with the FileHeaderGenerator's current settings. */
-function generate_header(doc: vscode.TextDocument, description: string): void {
+function generate_header(
+	doc: vscode.TextDocument,
+	description: string,
+	dependencies: string
+): void {
+	// set the text to blank first
+	let text = "";
+
 	// First, get the formatString property
 	let date_format = get_date_format();
 
@@ -362,10 +438,16 @@ function generate_header(doc: vscode.TextDocument, description: string): void {
 	// Wrap the description if necessary
 	let description_wrapped = wrap_description(description, set.middle + "   ");
 
+	// Wrap the dependencies if necessary
+	let dependencies_wrapped = wrap_description(dependencies, set.middle + "   ");
+
+	if (bang) {
+		text += bang + "\n";
+	}
+
 	// Create the full comment text
-	let text = set.start + "!/usr/bin/env " + bang + "\n";
-	text += set.middle + " -*-coding:utf-8 -*- \n";
-	text += set.middle + " Auto updated?\n";
+	text += set.start + "-*-coding:utf-8 -*- \n";
+	text += set.middle + "Auto updated?\n";
 	text += set.middle + "   Yes\n";
 	text += set.middle + "File :\n";
 	text += set.middle + "   " + file + "\n";
@@ -374,13 +456,16 @@ function generate_header(doc: vscode.TextDocument, description: string): void {
 	text += set.middle + "Github :\n";
 	text += set.middle + "   " + get_github() + "\n";
 	text += set.middle + "\n";
-	text += set.middle + " Created:\n";
+	text += set.middle + "Created:\n";
 	text += set.middle + "   " + get_now(date_format) + "\n";
-	text += set.middle + " Last edited:\n";
+	text += set.middle + "Last edited:\n";
 	text += set.middle + "   " + get_now(date_format) + "\n";
 	text += set.middle + "\n";
-	text += set.middle + " Description:\n";
+	text += set.middle + "Description:\n";
 	text += description_wrapped;
+	text += set.middle + "\n";
+	text += set.middle + "Dependencies:\n";
+	text += dependencies_wrapped;
 	text += set.end + "\n\n";
 
 	// Create an edit
@@ -406,25 +491,52 @@ function update_header(doc: vscode.TextDocument): void {
 	let date_format = get_date_format();
 
 	// Get the header info
-	let [auto_updated, _, _1, _2, last_edited_line, last_edited_start, last_edited_end] = read_file_header(doc, set, N);
+	let [
+		auto_updated,
+		_,
+		_1,
+		_2,
+		last_edited_line,
+		last_edited_start,
+		last_edited_end,
+	] = read_file_header(doc, set, N);
 
 	// Check what we have
 	if (!auto_updated) {
 		// No auto update enabled
-		console.log("fileheadergenerator: no auto update enabled for file: \"" + doc.uri.path + "\"");
+		console.log(
+			'fileheadergenerator: no auto update enabled for file: "' +
+				doc.uri.path +
+				'"'
+		);
 		return;
 	}
 
 	// If auto updateing but no last_edited found
-	if (last_edited_line === -1 || last_edited_start === -1 || last_edited_end === -1) {
-		console.log("fileheadergenerator: we want to auto update, but no 'last updated' header found: this should not happen!")
-		vscode.window.showErrorMessage("Internal error occurred while updating file (see log)");
+	if (
+		last_edited_line === -1 ||
+		last_edited_start === -1 ||
+		last_edited_end === -1
+	) {
+		console.log(
+			"fileheadergenerator: we want to auto update, but no 'last updated' header found: this should not happen!"
+		);
+		vscode.window.showErrorMessage(
+			"Internal error occurred while updating file (see log)"
+		);
 		return;
 	}
 
 	// Now that everything's correct, update the last edited field
 	let edit = new vscode.WorkspaceEdit();
-	edit.replace(doc.uri, new vscode.Range(new vscode.Position(last_edited_line, last_edited_start), new vscode.Position(last_edited_line, last_edited_end)), get_now(date_format));
+	edit.replace(
+		doc.uri,
+		new vscode.Range(
+			new vscode.Position(last_edited_line, last_edited_start),
+			new vscode.Position(last_edited_line, last_edited_end)
+		),
+		get_now(date_format)
+	);
 	let edit_resolve = vscode.workspace.applyEdit(edit);
 	edit_resolve.then(() => {
 		can_update = false;
@@ -434,7 +546,9 @@ function update_header(doc: vscode.TextDocument): void {
 		});
 	});
 
-	console.log("fileheadergenerator: update success for file: \"" + doc.uri.path + "\"");
+	console.log(
+		'fileheadergenerator: update success for file: "' + doc.uri.path + '"'
+	);
 }
 
 /* Handler for the extension activation; basically the first time it is run/loaded. */
@@ -442,16 +556,25 @@ export function activate(context: vscode.ExtensionContext) {
 	// Only add things if the extension is enabled
 	if (get_enabled()) {
 		// Register the commands and handlers
-		let generate_header = vscode.commands.registerCommand('fileheadergenerator.generateHeader', prepare_generation);
-		let on_did_save_handler = vscode.workspace.onDidSaveTextDocument(update_header);
+		let generate_header = vscode.commands.registerCommand(
+			"fileheadergenerator.generateHeader",
+			prepare_generation
+		);
+		let on_did_save_handler =
+			vscode.workspace.onDidSaveTextDocument(update_header);
 
 		// Push them to the context
 		context.subscriptions.push(generate_header, on_did_save_handler);
 	} else {
 		// Register the commands and handlers
-		let generate_header = vscode.commands.registerCommand('fileheadergenerator.generateHeader', () => {
-			vscode.window.showInformationMessage("Extension 'File Header Generator' is not enabled. Enable it in settings.");
-		});
+		let generate_header = vscode.commands.registerCommand(
+			"fileheadergenerator.generateHeader",
+			() => {
+				vscode.window.showInformationMessage(
+					"Extension 'File Header Generator' is not enabled. Enable it in settings."
+				);
+			}
+		);
 
 		// Push them to the context
 		context.subscriptions.push(generate_header);
@@ -459,4 +582,4 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 /* Handler for the extension deactivation. */
-export function deactivate() { }
+export function deactivate() {}
