@@ -13,6 +13,17 @@ The creation of a new header is really easy. Simply run the command: "Generate H
 
 When the header is generated, it is automatically maintained (i.e., the 'Last Edited' date is updated) every time the file is saved. To stop this behaviour, set 'Auto updated?' to no or remove it altogether.
 
+## Supported Languages
+
+- python
+- shellscript
+- perl
+- fish
+- lua
+- coffeescript
+
+For the full list that this plugin supports check [Language Support](LANG_SUPPORT.md)
+
 ## Commands
 
 The File Header Generator extension current contributes the following command:
