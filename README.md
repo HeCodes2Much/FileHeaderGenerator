@@ -35,6 +35,7 @@ The File Header Generator extension current contributes the following command:
 This extension contributes the following settings:
 
 - `file-header-generator.enabled`: Enables or disables this extension.
+- `file-header-generator.shebangs`: Enables or disables shebangs for this extension.
 - `file-header-generator.username`: Set your own name to sign the headers generated with this extension.
 - `file-header-generator.searchLines`: Number of lines to search for the Auto Updated and Last Edited fields. More lines means more extensive search on non-updated files, but more lines allows for more complicated headers before the fields can appear.
 - `file-header-generator.dateFormat`: The format of dates written by the FileHeaderGenerator. Is set to the current locale by default (see the list of special tokens below). For an overview of the tokens available, refer to [https://moment.github.io/luxon/#/formatting?id=table-of-tokens](https://moment.github.io/luxon/#/formatting?id=table-of-tokens.). Additionally, there are a few extra values:
