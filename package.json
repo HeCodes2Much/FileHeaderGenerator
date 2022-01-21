@@ -2,7 +2,7 @@
 	"name": "fileheadergenerator",
 	"displayName": "File Header Generator",
 	"description": "Automatically creates (and maintains) file headers for multiple languages.",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"publisher": "TheRepoClub",
 	"icon": "images/logo.png",
 	"repository": {
@@ -36,6 +36,12 @@
 						"scope": "language-overridable",
 						"description": "Enables or disables this extension."
 					},
+					"fileheadergenerator.showshebangs": {
+						"type": "boolean",
+						"default": true,
+						"scope": "language-overridable",
+						"description": "Enables or disables the shebang."
+					},
 					"fileheadergenerator.username": {
 						"type": "string",
 						"default": "Anonymous",
@@ -52,7 +58,7 @@
 						"type": "number",
 						"default": 15,
 						"scope": "language-overridable",
-						"description": "Number of lines to search for the 'Auto updated?' and 'Last edited:' fields. The larger the number, the more you can write before the fields can appear; however, it also increases search cost for files that are not auto updated."
+						"description": "Number of lines to search for the 'Auto updated?' and 'Modified:' fields. The larger the number, the more you can write before the fields can appear; however, it also increases search cost for files that are not auto updated."
 					},
 					"fileheadergenerator.dateFormat": {
 						"type": "string",

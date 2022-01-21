@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+- Added a preference for the SheBang to be enabled true or false
+
 ## [1.0.3] - 20-01-2022
 
 - Fixed She-Bang to work right

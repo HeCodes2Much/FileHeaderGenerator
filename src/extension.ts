@@ -2,19 +2,19 @@
  * -*-coding:utf-8 -*-
  * Auto updated?
  *   Yes
- *File :
+ *File:
  *   extension
- *Author :
+ *Author:
  *   The-Repo-Club [wayne6324@gmail.com]
- *Github :
+ *Github =:
  *   https://github.com/The-Repo-Club/
  *
- * Created:
+ *Created:
  *   Wed 19 January 2022, 03:12:09 PM [GMT]
- * Last edited:
- *   21 January 2022, 13:09:52 GMT
+ *Modified:
+ *   Fri 21 January 2022, 02:32:27 PM [GMT]
  *
- * Description:
+ *Description:
  *   TypeScript script for the File Header Generator  *   extension. This
  *   is  *   where the magic happens, as they say.
  **/
@@ -162,26 +162,38 @@ function get_comment_set(doc: vscode.TextDocument): CommentSet {
 }
 
 function get_file_bang(doc: vscode.TextDocument): string {
-	let id = doc.languageId;
+	let config = vscode.workspace.getConfiguration();
+	let data = config.get<boolean>("fileheadergenerator.showshebangs");
+	let showshebangs = data;
+	if (data === undefined || showshebangs === false) {
+		showshebangs = false;
+	} else {
+		showshebangs = true;
+	}
+	if (showshebangs === true) {
+		let id = doc.languageId;
 
-	let lang;
-	// Use that for the comment character
-	if (
-		id === "python" ||
-		id === "shellscript" ||
-		id === "perl" ||
-		id === "fish" ||
-		id === "lua" ||
-		id === "coffeescript"
-	) {
-		if (id === "shellscript") {
-			lang = "bash";
-			return "#!/usr/bin/env " + lang;
-		} else if (id === "coffeescript") {
-			lang = "coffee";
-			return "#!/usr/bin/env " + lang;
+		let lang;
+		// Use that for the comment character
+		if (
+			id === "python" ||
+			id === "shellscript" ||
+			id === "perl" ||
+			id === "fish" ||
+			id === "lua" ||
+			id === "coffeescript"
+		) {
+			if (id === "shellscript") {
+				lang = "bash";
+				return "#!/usr/bin/env " + lang;
+			} else if (id === "coffeescript") {
+				lang = "coffee";
+				return "#!/usr/bin/env " + lang;
+			} else {
+				return "#!/usr/bin/env " + id;
+			}
 		} else {
-			return "#!/usr/bin/env " + id;
+			return "";
 		}
 	} else {
 		return "";
@@ -303,10 +315,11 @@ function strip_whitelines(text: string): string {
 function read_file_header(
 	doc: vscode.TextDocument,
 	set: CommentSet,
+	file: string,
 	max_lines_to_search: number
 ): [boolean, number, number, number, number, number, number] {
 	// Simply search the first N lines for the line: set.middle + " Auto updated?"
-	// But while at it, also save position of lines: set.middle + " Created:" and set.middle + " Last edited:"
+	// But while at it, also save position of lines: set.middle + " Created:" and set.middle + " Modified:"
 	let doc_text = doc.getText();
 	let auto_updated = "unknown";
 	let created_line = -1;
@@ -352,7 +365,7 @@ function read_file_header(
 		} else if (line === "Created:") {
 			// The values can be found at the next line
 			created_line = l + 1;
-		} else if (line === "Last edited:") {
+		} else if (line === "Modified:") {
 			// The values can be found at the next line
 			last_edited_line = l + 1;
 		}
@@ -449,16 +462,16 @@ function generate_header(
 	text += set.start + "-*-coding:utf-8 -*- \n";
 	text += set.middle + "Auto updated?\n";
 	text += set.middle + "   Yes\n";
-	text += set.middle + "File :\n";
+	text += set.middle + "File:\n";
 	text += set.middle + "   " + file + "\n";
-	text += set.middle + "Author :\n";
+	text += set.middle + "Author:\n";
 	text += set.middle + "   " + get_editor() + "\n";
-	text += set.middle + "Github :\n";
+	text += set.middle + "Github:\n";
 	text += set.middle + "   " + get_github() + "\n";
 	text += set.middle + "\n";
 	text += set.middle + "Created:\n";
 	text += set.middle + "   " + get_now(date_format) + "\n";
-	text += set.middle + "Last edited:\n";
+	text += set.middle + "Modified:\n";
 	text += set.middle + "   " + get_now(date_format) + "\n";
 	text += set.middle + "\n";
 	text += set.middle + "Description:\n";
@@ -485,6 +498,9 @@ function update_header(doc: vscode.TextDocument): void {
 
 	// Fetch the comment set
 	let set = get_comment_set(doc);
+
+	// Fetch the filename (with extension)
+	let file = get_filename(doc);
 	// Fetch the maximum number of lines we'll search
 	let N = get_n_lines();
 	// Fetch the date format
@@ -499,7 +515,7 @@ function update_header(doc: vscode.TextDocument): void {
 		last_edited_line,
 		last_edited_start,
 		last_edited_end,
-	] = read_file_header(doc, set, N);
+	] = read_file_header(doc, set, file, N);
 
 	// Check what we have
 	if (!auto_updated) {
@@ -527,7 +543,7 @@ function update_header(doc: vscode.TextDocument): void {
 		return;
 	}
 
-	// Now that everything's correct, update the last edited field
+	// Now that everything's correct, update the Modified field
 	let edit = new vscode.WorkspaceEdit();
 	edit.replace(
 		doc.uri,
