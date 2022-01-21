@@ -5,14 +5,14 @@
  *File :
  *   extension
  *Author :
- *   The-Repo-Club [wayne6324:gmail.com]
+ *   The-Repo-Club [wayne6324@gmail.com]
  *Github :
  *   https://github.com/The-Repo-Club/
  *
  * Created:
  *   Wed 19 January 2022, 03:12:09 PM [GMT]
  * Last edited:
- *   Thu 20 January 2022, 08:36:05 PM [GMT]
+ *   21 January 2022, 13:09:52 GMT
  *
  * Description:
  *   TypeScript script for the File Header Generator  *   extension. This
@@ -295,7 +295,7 @@ function strip_whitelines(text: string): string {
 		return "";
 	}
 
-	// Otherwise, return the appropriate substing
+	// Otherwise, return the appropriate substring
 	return text.substring(start_i, end_i + 1);
 }
 // dd MMM yyyy, HH:mm:ss
@@ -379,7 +379,7 @@ function read_file_header(
 }
 
 /***** COMMAND FUNCTIONS *****/
-/* Prepares generating a header by quering the user for a description. */
+/* Prepares generating a header by querying the user for a description. */
 async function prepare_generation() {
 	// Fetch the currently opened document
 	let doc = vscode.window.activeTextEditor?.document;
@@ -512,7 +512,7 @@ function update_header(doc: vscode.TextDocument): void {
 		return;
 	}
 
-	// If auto updateing but no last_edited found
+	// If auto updating but no last_edited found
 	if (
 		last_edited_line === -1 ||
 		last_edited_start === -1 ||

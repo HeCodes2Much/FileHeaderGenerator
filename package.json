@@ -33,26 +33,31 @@
 					"fileheadergenerator.enabled": {
 						"type": "boolean",
 						"default": true,
+						"scope": "language-overridable",
 						"description": "Enables or disables this extension."
 					},
 					"fileheadergenerator.username": {
 						"type": "string",
 						"default": "Anonymous",
+						"scope": "language-overridable",
 						"description": "Set your own name to sign the headers generated with this extension."
 					},
 					"fileheadergenerator.github": {
 						"type": "string",
 						"default": "Anonymous",
+						"scope": "language-overridable",
 						"description": "Set your own github to sign the headers generated with this extension."
 					},
 					"fileheadergenerator.searchLines": {
 						"type": "number",
 						"default": 15,
+						"scope": "language-overridable",
 						"description": "Number of lines to search for the 'Auto updated?' and 'Last edited:' fields. The larger the number, the more you can write before the fields can appear; however, it also increases search cost for files that are not auto updated."
 					},
 					"fileheadergenerator.dateFormat": {
 						"type": "string",
 						"default": "<locale>",
+						"scope": "language-overridable",
 						"description": "The format of dates written by the FileHeaderGenerator. For an overview of the tokens available, refer to the extension's README."
 					}
 				}

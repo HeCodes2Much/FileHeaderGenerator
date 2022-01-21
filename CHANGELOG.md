@@ -6,7 +6,7 @@
 
 - Fixed She-Bang to work right
 - Added more language compatibilities
-- Added Dependencies userneth Description
+- Added Dependencies underneath Description
 
 ## [1.0.2] - 19-01-2022
 
